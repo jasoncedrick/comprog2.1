@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Viewport meta tag for mobile responsiveness -->
+    <link rel="stylesheet" type="text/css" href="styles.css"> <!-- Link to your primary CSS file -->
+    <link rel="stylesheet" type="text/css" href="mobile.css"> <!-- Link to the mobile CSS file -->
+</head>
+    <title>Computer Programming</title>
+    <style>
+        /* Styles (same as before) */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .question {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .answer-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .submit-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .submit-button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .result h2 {
+            font-size: 24px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        @media screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .question {
+                font-size: 16px;
+            }
+            .answer-input,
+            .submit-button {
+                font-size: 14px;
+            }
+            .result {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz Page</h1>
+
+    <div class="container">
+        <div id="question" class="question"></div>
+        <p id="question-text"></p>
+        <input type="text" id="answer-input" class="answer-input" placeholder="Your answer">
+        <br>
+        <button id="submit-button" class="submit-button" onclick="checkAnswer()">Submit Answer</button>
+        <button id="show-correct-button" class="submit-button" onclick="showCorrectAnswers()">Show Correct Answers</button>
+        <button id="review-previous-button" class="submit-button" onclick="reviewPrevious()">Review Previous</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script type="text/javascript">
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                if (i !== j) {
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            }
+        }
+
+        const questions = [
+          "Cannot be changed while the program is running - Constant",
+
+"Might change while the program is running - Variable",
+
+"Value taken literally at each use - Literal constant",
+
+"Named memory location. Used to store value. Can hold only one value at a time. Value can change - Variable",
+
+"Type of data that can be stored. How much memory item occupies. What types of operations can be performed on data - Data type",
+
+"Simple data type (directly holds values) - Primitive type",
+
+"More complex data types (hold references or addresses that point to the location of values stored in memory) - Reference types",
+
+"Byte-length integer - Byte",
+
+"Short integer - short",
+
+"Integer - int",
+
+"Long integer - long",
+
+"Single-precision floating point - float",
+
+"Double-precision floating point - double",
+
+"A single character - char",
+
+"A Boolean value (true or false) - boolean",
+
+"Statement that reserves a named memory location. Includes: Data type, Identifier, Optional assignment operator and assigned value, Ending semicolon - Variable declaration",
+
+"Equal sign (=). Value to the right assigned to the variable on the left - Assignment operator",
+
+"Assignment made when declaring a variable - Initialization",
+
+"Assignment made after the variable is declared - Assignment",
+
+"Order in which operands are used with operators - Associativity",
+
+"Should not change during program execution. Has data type, name, and value. Data type preceded by the keyword final. Can be assigned a value only once. Conventionally given identifiers using all uppercase letters - Named constant",
+
+"Store integers, or whole numbers. Value from -2,147,483,648 to +2,147,483,647 - Type int",
+
+"byte, short, long - Variations of the integer type",
+
+"print() or println() statement - Displaying Data",
+
+"Perform calculations with values in programs - Arithmetic operators",
+
+"Value used on either side of the operator - Operand",
+
+"Integer constants or integer variables. Result is integer. Fractional part of result lost - Integer division",
+
+"Rules for the order in which parts of the mathematical expression are evaluated. First multiplication, division, and modulus, then addition or subtraction - Operator precedence",
+
+"Based on true-or-false comparisons - Boolean logic",
+
+"Can hold only one of two values (true or false) - Boolean variable",
+
+"Compares two items - Relational operator",
+
+"Contains decimal positions - Floating-point number",
+
+"float, double - Floating-point data types",
+
+"Refers to mathematical accuracy - Significant digits",
+
+"Type to which all operands in an expression are converted for compatibility - Unifying type",
+
+"1. double 2. Float 3. long 4. int - Order for establishing unifying types between two variables",
+
+"Forces the value of one data type to be used as the value of another type - Type casting",
+
+"Place the desired result type in parentheses. Explicit conversion. Do not need to perform cast when assigning value to a higher unifying type - Cast operator",
+
+"Holds any single character - char data type",
+
+"Built-in class. Store and manipulate character strings. String constants written between double quotation marks - String",
+
+"Begins with a backslash followed by a character. Represents a single nonprinting character - Escape sequence",
+
+"Breaks input into units called tokens - Scanner object".
+
+    ]
+        shuffle(questions);
+
+        let score = 0;
+        let currentIndex = 0;
+        let reviewIndex = -1; // Initialize reviewIndex
+
+        function displayQuestion() {
+            if (currentIndex < questions.length) {
+                const questionData = questions[currentIndex].split(' - ');
+                const questionText = questionData[0];
+
+                document.getElementById('question').textContent = `Question ${currentIndex + 1}:`;
+                document.getElementById('question-text').textContent = questionText;
+                document.getElementById('answer-input').value = '';
+
+                currentIndex++;
+            } else {
+                showResult();
+            }
+        }
+
+        function checkAnswer() {
+            const userInput = document.getElementById('answer-input').value;
+            const answerData = questions[currentIndex - 1].split(' - ');
+            const correctAnswer = answerData[1];
+
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = `<h2>Question ${currentIndex}</h2>`;
+            
+            if (userInput.toLowerCase() === correctAnswer.toLowerCase()) {
+                resultContainer.innerHTML += `<p>Your answer (${userInput}) is <strong>correct</strong>.</p>`;
+                score++;
+            } else {
+                resultContainer.innerHTML += `<p>Your answer (${userInput}) is <strong>incorrect</strong>. The correct answer is: ${correctAnswer}</p>`;
+            }
+
+            displayQuestion();
+        }
+
+        function showCorrectAnswers() {
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = `<h2>Quiz completed</h2>`;
+
+            for (let i = 0; i < questions.length; i++) {
+                const questionData = questions[i].split(' - ');
+                const questionText = questionData[0];
+                const correctAnswer = questionData[1];
+
+                resultContainer.innerHTML += `
+                    <p>Question ${i + 1}: ${questionText}</p>
+                    <p>Your Answer: ${correctAnswer}</p>
+                    <p>Correct Answer: ${correctAnswer}</p>
+                    <p>Correct</p>
+                    <hr>
+                `;
+            }
+        }
+        function displayWrongAnswers() {
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = `<h2>Wrong Answers</h2>`;
+
+            for (let i = 0; i < wrongAnswers.length; i++) {
+                resultContainer.innerHTML += `
+                    <p>Question ${i + 1}: ${wrongAnswers[i].question}</p>
+                    <p>Your Answer: ${wrongAnswers[i].yourAnswer}</p>
+                    <p>Correct Answer: ${wrongAnswers[i].correctAnswer}</p>
+                    <p>Incorrect</p>
+                    <hr>
+                `;
+            }
+        }
+        function reviewPrevious() {
+            if (reviewIndex >= 0) {
+                currentIndex = reviewIndex; // Set currentIndex to the reviewIndex
+                reviewIndex--;
+                displayQuestion();
+
+            } else if (currentIndex > 1) {
+                // Allow reviewing the first question if currentIndex is greater than 1
+                currentIndex = 0;
+                reviewIndex = -1;
+                displayQuestion();
+            }
+        }
+
+        displayQuestion();
+    </script>
+</body>
+</html>
+
+       
